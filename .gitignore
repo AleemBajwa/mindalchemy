@@ -1,0 +1,46 @@
+﻿# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Build
+dist/
+build/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+backend/ai_therapist.db
+
+# Temporary
+*.tmp
+.cache/
+
+# Deployment info files (may contain credentials)
+*_DEPLOY_INFO.txt
+*_DEPLOY_INFO.md
+RAILWAY_DEPLOY_INFO.txt
+VERCEL_DEPLOY_INFO.txt
+DEPLOYMENT_CREDENTIALS.txt
+*.credentials

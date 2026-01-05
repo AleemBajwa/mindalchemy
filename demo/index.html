@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Therapist - UI/UX Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="screen active">
+        <div class="welcome-container">
+            <div class="welcome-content">
+                <div class="logo">
+                    <div class="logo-icon">🧘</div>
+                    <h1>AI Therapist</h1>
+                </div>
+                <p class="tagline">Your compassionate companion for mental wellness</p>
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">💬</span>
+                        <span>24/7 AI Support</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>Track Your Progress</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📝</span>
+                        <span>Personal Journal</span>
+                    </div>
+                </div>
+                <button class="btn-primary" onclick="showScreen('onboarding')">Get Started</button>
+                <button class="btn-secondary" onclick="showScreen('login')">Already have an account?</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboarding Screen -->
+    <div id="onboarding-screen" class="screen">
+        <div class="onboarding-container">
+            <div class="onboarding-content">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="onboarding-progress"></div>
+                </div>
+                <div class="onboarding-step active" data-step="1">
+                    <h2>Welcome! Let's get to know you</h2>
+                    <p>We'll ask a few questions to personalize your experience</p>
+                    <div class="form-group">
+                        <label>What brings you here today?</label>
+                        <div class="option-grid">
+                            <div class="option-card" onclick="selectOption(this)">
+                                <span class="option-icon">😰</span>
+                                <span>Anxiety & Stress</span>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this)">
+                                <span class="option-icon">😔</span>
+                                <span>Depression</span>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this)">
+                                <span class="option-icon">🧘</span>
+                                <span>Mindfulness & Growth</span>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this)">
+                                <span class="option-icon">💪</span>
+                                <span>General Support</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="nextOnboardingStep()">Continue</button>
+                </div>
+                <div class="onboarding-step" data-step="2">
+                    <h2>How are you feeling right now?</h2>
+                    <p>Select your current mood</p>
+                    <div class="mood-selector-large">
+                        <div class="mood-option" onclick="selectMood(this, 'happy')">
+                            <span class="mood-emoji">😊</span>
+                            <span class="mood-label">Happy</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMood(this, 'calm')">
+                            <span class="mood-emoji">😌</span>
+                            <span class="mood-label">Calm</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMood(this, 'neutral')">
+                            <span class="mood-emoji">😐</span>
+                            <span class="mood-label">Neutral</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMood(this, 'sad')">
+                            <span class="mood-emoji">😔</span>
+                            <span class="mood-label">Sad</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMood(this, 'anxious')">
+                            <span class="mood-emoji">😰</span>
+                            <span class="mood-label">Anxious</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMood(this, 'angry')">
+                            <span class="mood-emoji">😡</span>
+                            <span class="mood-label">Angry</span>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="nextOnboardingStep()">Continue</button>
+                </div>
+                <div class="onboarding-step" data-step="3">
+                    <h2>Meet your AI Therapist</h2>
+                    <div class="therapist-intro">
+                        <div class="therapist-avatar">🤖</div>
+                        <p>I'm here to support you 24/7. I use evidence-based techniques like CBT and DBT to help you manage your mental health.</p>
+                        <p>I'm not a replacement for professional therapy, but I'm here to listen, support, and guide you.</p>
+                    </div>
+                    <button class="btn-primary" onclick="showScreen('register')">Create Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Screen -->
+    <div id="register-screen" class="screen">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Create Your Account</h2>
+                <form class="auth-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" placeholder="Enter your name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" placeholder="Create a strong password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" placeholder="Confirm your password">
+                    </div>
+                    <button type="button" class="btn-primary" onclick="showScreen('dashboard')">Create Account</button>
+                    <p class="auth-link">Already have an account? <a href="#" onclick="showScreen('login')">Sign in</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
+        <div class="auth-container">
+            <div class="auth-card">
+                <h2>Welcome Back</h2>
+                <form class="auth-form">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="your.email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" placeholder="Enter your password">
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox"> Remember me
+                        </label>
+                        <a href="#" class="forgot-password">Forgot password?</a>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="showScreen('dashboard')">Sign In</button>
+                    <p class="auth-link">Don't have an account? <a href="#" onclick="showScreen('register')">Sign up</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="screen">
+        <div class="app-container">
+            <header class="app-header">
+                <div class="header-left">
+                    <h1>AI Therapist</h1>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn" onclick="showScreen('notifications')">
+                        <span>🔔</span>
+                        <span class="badge">3</span>
+                    </button>
+                    <button class="icon-btn" onclick="showScreen('profile')">
+                        <span>👤</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="app-content">
+                <div class="greeting-section">
+                    <h2>Hello, Sarah 👋</h2>
+                    <p>How are you feeling today?</p>
+                </div>
+
+                <div class="quick-mood-section">
+                    <div class="mood-selector-quick">
+                        <div class="mood-btn" onclick="logQuickMood('happy')">😊</div>
+                        <div class="mood-btn" onclick="logQuickMood('calm')">😌</div>
+                        <div class="mood-btn" onclick="logQuickMood('neutral')">😐</div>
+                        <div class="mood-btn" onclick="logQuickMood('sad')">😔</div>
+                        <div class="mood-btn" onclick="logQuickMood('anxious')">😰</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">💬</div>
+                        <div class="stat-info">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Sessions</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <div class="stat-value">7</div>
+                            <div class="stat-label">Day Streak</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-info">
+                            <div class="stat-value">24</div>
+                            <div class="stat-label">Journal Entries</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3>Quick Actions</h3>
+                    <div class="action-grid">
+                        <div class="action-card" onclick="showScreen('chat')">
+                            <div class="action-icon">💬</div>
+                            <div class="action-title">Chat with AI</div>
+                            <div class="action-desc">Talk to your therapist</div>
+                        </div>
+                        <div class="action-card" onclick="showScreen('mood')">
+                            <div class="action-icon">😊</div>
+                            <div class="action-title">Log Mood</div>
+                            <div class="action-desc">Track your emotions</div>
+                        </div>
+                        <div class="action-card" onclick="showScreen('journal')">
+                            <div class="action-icon">📝</div>
+                            <div class="action-title">Journal</div>
+                            <div class="action-desc">Write your thoughts</div>
+                        </div>
+                        <div class="action-card" onclick="showScreen('progress')">
+                            <div class="action-icon">📊</div>
+                            <div class="action-title">Progress</div>
+                            <div class="action-desc">View your journey</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-item">
+                        <div class="activity-icon">💬</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Chat Session</div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">😊</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Mood Logged: Happy</div>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">📝</div>
+                        <div class="activity-content">
+                            <div class="activity-title">Journal Entry</div>
+                            <div class="activity-time">Yesterday</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <button class="nav-item active" onclick="showScreen('dashboard')">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('chat')">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">Chat</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('mood')">
+                    <span class="nav-icon">😊</span>
+                    <span class="nav-label">Mood</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('journal')">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Journal</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('progress')">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Progress</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chat-screen" class="screen">
+        <div class="app-container">
+            <header class="chat-header">
+                <button class="back-btn" onclick="showScreen('dashboard')">←</button>
+                <div class="chat-header-info">
+                    <div class="chat-avatar">🤖</div>
+                    <div>
+                        <div class="chat-name">AI Therapist</div>
+                        <div class="chat-status">Online • Always here for you</div>
+                    </div>
+                </div>
+                <button class="icon-btn">⚙️</button>
+            </header>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-text">Hello! I'm your AI therapist. I'm here to listen and support you. How are you feeling today?</div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                <div class="message user-message">
+                    <div class="message-content">
+                        <div class="message-text">Hi, I've been feeling really anxious about work lately</div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                <div class="message ai-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-text">I understand that work anxiety can be really overwhelming. That's completely valid. Can you tell me more about what specifically is making you feel anxious about work?</div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                <div class="message user-message">
+                    <div class="message-content">
+                        <div class="message-text">I have a big presentation tomorrow and I'm worried I'll mess it up</div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+                <div class="message ai-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-text">Presentation anxiety is very common. Let's work through this together. Have you prepared for the presentation? What evidence do you have that you might "mess it up"?</div>
+                        <div class="message-time">Just now</div>
+                        <div class="message-actions">
+                            <button class="action-btn">Try Breathing Exercise</button>
+                            <button class="action-btn">CBT Thought Record</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <button class="chat-input-btn">😊</button>
+                <input type="text" class="chat-input" placeholder="Type your message..." id="chat-input">
+                <button class="chat-input-btn" onclick="sendMessage()">📤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mood Tracking Screen -->
+    <div id="mood-screen" class="screen">
+        <div class="app-container">
+            <header class="page-header">
+                <button class="back-btn" onclick="showScreen('dashboard')">←</button>
+                <h2>Mood Tracking</h2>
+                <button class="icon-btn">📅</button>
+            </header>
+
+            <div class="app-content">
+                <div class="mood-section">
+                    <h3>How are you feeling right now?</h3>
+                    <div class="mood-selector-large">
+                        <div class="mood-option" onclick="selectMoodDetailed(this)">
+                            <span class="mood-emoji">😊</span>
+                            <span class="mood-label">Happy</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMoodDetailed(this)">
+                            <span class="mood-emoji">😌</span>
+                            <span class="mood-label">Calm</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMoodDetailed(this)">
+                            <span class="mood-emoji">😐</span>
+                            <span class="mood-label">Neutral</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMoodDetailed(this)">
+                            <span class="mood-emoji">😔</span>
+                            <span class="mood-label">Sad</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMoodDetailed(this)">
+                            <span class="mood-emoji">😰</span>
+                            <span class="mood-label">Anxious</span>
+                        </div>
+                        <div class="mood-option" onclick="selectMoodDetailed(this)">
+                            <span class="mood-emoji">😡</span>
+                            <span class="mood-label">Angry</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mood-details" id="mood-details" style="display: none;">
+                    <div class="form-group">
+                        <label>Intensity (1-10)</label>
+                        <input type="range" min="1" max="10" value="5" class="slider" id="intensity-slider">
+                        <div class="slider-labels">
+                            <span>Mild</span>
+                            <span>Moderate</span>
+                            <span>Intense</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>What triggered this mood? (Optional)</label>
+                        <textarea placeholder="Describe what led to this feeling..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes (Optional)</label>
+                        <textarea placeholder="Any additional thoughts..."></textarea>
+                    </div>
+                    <button class="btn-primary" onclick="saveMood()">Save Mood</button>
+                </div>
+
+                <div class="mood-calendar-section">
+                    <h3>Your Mood Calendar</h3>
+                    <div class="mood-calendar">
+                        <div class="calendar-header">
+                            <button>←</button>
+                            <span>January 2026</span>
+                            <button>→</button>
+                        </div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day mood-happy">1</div>
+                            <div class="calendar-day mood-calm">2</div>
+                            <div class="calendar-day mood-anxious">3</div>
+                            <div class="calendar-day mood-happy">4</div>
+                            <div class="calendar-day mood-neutral">5</div>
+                            <div class="calendar-day mood-sad">6</div>
+                            <div class="calendar-day mood-calm">7</div>
+                            <div class="calendar-day mood-happy">8</div>
+                            <div class="calendar-day mood-calm">9</div>
+                            <div class="calendar-day mood-happy">10</div>
+                            <div class="calendar-day mood-neutral">11</div>
+                            <div class="calendar-day mood-anxious">12</div>
+                            <div class="calendar-day mood-calm">13</div>
+                            <div class="calendar-day mood-happy">14</div>
+                            <div class="calendar-day mood-calm">15</div>
+                            <div class="calendar-day mood-happy">16</div>
+                            <div class="calendar-day mood-neutral">17</div>
+                            <div class="calendar-day mood-calm">18</div>
+                            <div class="calendar-day mood-happy">19</div>
+                            <div class="calendar-day mood-calm">20</div>
+                            <div class="calendar-day mood-happy">21</div>
+                            <div class="calendar-day mood-neutral">22</div>
+                            <div class="calendar-day mood-calm">23</div>
+                            <div class="calendar-day mood-happy">24</div>
+                            <div class="calendar-day mood-calm">25</div>
+                            <div class="calendar-day mood-happy">26</div>
+                            <div class="calendar-day mood-neutral">27</div>
+                            <div class="calendar-day mood-calm">28</div>
+                            <div class="calendar-day mood-happy">29</div>
+                            <div class="calendar-day mood-calm">30</div>
+                            <div class="calendar-day mood-happy">31</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mood-trends">
+                    <h3>Mood Trends</h3>
+                    <div class="trend-chart">
+                        <div class="chart-placeholder">
+                            <p>📈 Mood trend graph would appear here</p>
+                            <p class="chart-note">Shows your mood patterns over the last 30 days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <button class="nav-item" onclick="showScreen('dashboard')">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('chat')">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">Chat</span>
+                </button>
+                <button class="nav-item active" onclick="showScreen('mood')">
+                    <span class="nav-icon">😊</span>
+                    <span class="nav-label">Mood</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('journal')">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Journal</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('progress')">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Progress</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Journal Screen -->
+    <div id="journal-screen" class="screen">
+        <div class="app-container">
+            <header class="page-header">
+                <button class="back-btn" onclick="showScreen('dashboard')">←</button>
+                <h2>Journal</h2>
+                <button class="icon-btn" onclick="showScreen('journal-new')">✏️</button>
+            </header>
+
+            <div class="app-content">
+                <div class="journal-filters">
+                    <button class="filter-btn active">All</button>
+                    <button class="filter-btn">Today</button>
+                    <button class="filter-btn">This Week</button>
+                    <button class="filter-btn">This Month</button>
+                </div>
+
+                <div class="journal-entries">
+                    <div class="journal-entry-card" onclick="showScreen('journal-view')">
+                        <div class="entry-date">Today, 2:30 PM</div>
+                        <div class="entry-title">Feeling better after the chat</div>
+                        <div class="entry-preview">Had a great conversation with my AI therapist about work anxiety. The breathing exercises really helped...</div>
+                        <div class="entry-tags">
+                            <span class="tag">gratitude</span>
+                            <span class="tag">progress</span>
+                        </div>
+                    </div>
+                    <div class="journal-entry-card">
+                        <div class="entry-date">Yesterday, 8:15 PM</div>
+                        <div class="entry-title">Reflecting on the week</div>
+                        <div class="entry-preview">This week has been challenging but I'm learning to manage my stress better...</div>
+                        <div class="entry-tags">
+                            <span class="tag">reflection</span>
+                        </div>
+                    </div>
+                    <div class="journal-entry-card">
+                        <div class="entry-date">2 days ago, 10:00 AM</div>
+                        <div class="entry-title">Morning thoughts</div>
+                        <div class="entry-preview">Woke up feeling anxious but used the CBT techniques we discussed...</div>
+                        <div class="entry-tags">
+                            <span class="tag">anxiety</span>
+                            <span class="tag">cbt</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="fab" onclick="showScreen('journal-new')">+</button>
+            </div>
+
+            <nav class="bottom-nav">
+                <button class="nav-item" onclick="showScreen('dashboard')">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('chat')">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">Chat</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('mood')">
+                    <span class="nav-icon">😊</span>
+                    <span class="nav-label">Mood</span>
+                </button>
+                <button class="nav-item active" onclick="showScreen('journal')">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Journal</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('progress')">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Progress</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- New Journal Entry Screen -->
+    <div id="journal-new" class="screen">
+        <div class="app-container">
+            <header class="page-header">
+                <button class="back-btn" onclick="showScreen('journal')">←</button>
+                <h2>New Entry</h2>
+                <button class="icon-btn" onclick="showScreen('journal')">💾</button>
+            </header>
+
+            <div class="app-content">
+                <div class="journal-editor">
+                    <input type="text" class="journal-title-input" placeholder="Entry title (optional)">
+                    <div class="editor-toolbar">
+                        <button class="toolbar-btn">B</button>
+                        <button class="toolbar-btn">I</button>
+                        <button class="toolbar-btn">U</button>
+                        <button class="toolbar-btn">📷</button>
+                    </div>
+                    <textarea class="journal-content" placeholder="Write your thoughts here..."></textarea>
+                    <div class="journal-prompts">
+                        <h4>Need inspiration?</h4>
+                        <button class="prompt-btn">What am I grateful for today?</button>
+                        <button class="prompt-btn">How did I handle stress today?</button>
+                        <button class="prompt-btn">What did I learn about myself?</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Tags (optional)</label>
+                        <input type="text" placeholder="Add tags separated by commas">
+                    </div>
+                    <button class="btn-primary">Save Entry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Screen -->
+    <div id="progress-screen" class="screen">
+        <div class="app-container">
+            <header class="page-header">
+                <button class="back-btn" onclick="showScreen('dashboard')">←</button>
+                <h2>Progress</h2>
+                <button class="icon-btn">📊</button>
+            </header>
+
+            <div class="app-content">
+                <div class="progress-stats">
+                    <div class="progress-stat-card">
+                        <div class="stat-number">7</div>
+                        <div class="stat-text">Day Streak</div>
+                    </div>
+                    <div class="progress-stat-card">
+                        <div class="stat-number">24</div>
+                        <div class="stat-text">Journal Entries</div>
+                    </div>
+                    <div class="progress-stat-card">
+                        <div class="stat-number">12</div>
+                        <div class="stat-text">Chat Sessions</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <h3>Mood Trends</h3>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            <p>📈 Weekly mood trend chart</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <h3>Activity Overview</h3>
+                    <div class="activity-chart">
+                        <div class="chart-placeholder">
+                            <p>📊 Activity frequency chart</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="achievements">
+                    <h3>Achievements</h3>
+                    <div class="achievement-grid">
+                        <div class="achievement-badge earned">
+                            <div class="badge-icon">🔥</div>
+                            <div class="badge-name">7 Day Streak</div>
+                        </div>
+                        <div class="achievement-badge earned">
+                            <div class="badge-icon">💬</div>
+                            <div class="badge-name">10 Sessions</div>
+                        </div>
+                        <div class="achievement-badge earned">
+                            <div class="badge-icon">📝</div>
+                            <div class="badge-name">20 Entries</div>
+                        </div>
+                        <div class="achievement-badge">
+                            <div class="badge-icon">⭐</div>
+                            <div class="badge-name">30 Day Streak</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="bottom-nav">
+                <button class="nav-item" onclick="showScreen('dashboard')">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Home</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('chat')">
+                    <span class="nav-icon">💬</span>
+                    <span class="nav-label">Chat</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('mood')">
+                    <span class="nav-icon">😊</span>
+                    <span class="nav-label">Mood</span>
+                </button>
+                <button class="nav-item" onclick="showScreen('journal')">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">Journal</span>
+                </button>
+                <button class="nav-item active" onclick="showScreen('progress')">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-label">Progress</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Crisis Screen (Modal) -->
+    <div id="crisis-modal" class="modal">
+        <div class="modal-content crisis-modal">
+            <h2>⚠️ Immediate Support Available</h2>
+            <p>I'm concerned about you. You're not alone, and help is available right now.</p>
+            <div class="crisis-resources">
+                <a href="tel:988" class="crisis-btn primary">
+                    <span class="crisis-icon">📞</span>
+                    <div>
+                        <div class="crisis-title">National Suicide Prevention</div>
+                        <div class="crisis-number">988</div>
+                    </div>
+                </a>
+                <a href="sms:741741" class="crisis-btn">
+                    <span class="crisis-icon">💬</span>
+                    <div>
+                        <div class="crisis-title">Crisis Text Line</div>
+                        <div class="crisis-number">Text HOME to 741741</div>
+                    </div>
+                </a>
+                <a href="tel:911" class="crisis-btn">
+                    <span class="crisis-icon">🚨</span>
+                    <div>
+                        <div class="crisis-title">Emergency Services</div>
+                        <div class="crisis-number">911</div>
+                    </div>
+                </a>
+            </div>
+            <button class="btn-secondary" onclick="closeCrisisModal()">I understand, continue</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
