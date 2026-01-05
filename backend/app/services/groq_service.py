@@ -15,8 +15,18 @@ class GroqService:
         # Only initialize Groq client if API key is provided
         if settings.groq_api_key and settings.groq_api_key != "your_groq_api_key_here":
             try:
+                # Initialize Groq client with only api_key parameter (no proxies)
                 self.client = Groq(api_key=settings.groq_api_key)
                 logger.info("Groq client initialized successfully")
+            except TypeError as e:
+                # Handle version compatibility issues
+                logger.error(f"Failed to initialize Groq client (version issue): {e}")
+                try:
+                    # Try alternative initialization without any extra parameters
+                    self.client = Groq(api_key=settings.groq_api_key)
+                except Exception as e2:
+                    logger.error(f"Failed to initialize Groq client: {e2}")
+                    self.client = None
             except Exception as e:
                 logger.error(f"Failed to initialize Groq client: {e}")
                 self.client = None
