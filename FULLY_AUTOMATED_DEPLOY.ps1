@@ -95,11 +95,23 @@ try {
 # Initialize Git if needed
 if (-not (Test-Path ".git")) {
     git init
-    git branch -M main
+}
+
+# Ensure we're on main branch (rename if needed)
+$currentBranch = git branch --show-current 2>&1
+if ($currentBranch -ne "main") {
+    git branch -M main 2>&1 | Out-Null
 }
 
 # Configure remote
-$currentRemote = git remote get-url origin -ErrorAction SilentlyContinue
+$currentRemote = $null
+try {
+    $currentRemote = git remote get-url origin 2>&1
+    if ($LASTEXITCODE -ne 0) { $currentRemote = $null }
+} catch {
+    $currentRemote = $null
+}
+
 if ($currentRemote -ne $repoUrl) {
     if ($currentRemote) {
         git remote set-url origin $repoUrl
@@ -113,10 +125,23 @@ $env:GIT_ASKPASS = "echo"
 $env:GIT_TERMINAL_PROMPT = "0"
 
 # Add and commit
+Write-Host "Staging files..." -ForegroundColor Gray
 git add .
-git commit -m "Production deployment ready - MindAlchemy" -q
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to stage files"
+}
+
+Write-Host "Creating commit..." -ForegroundColor Gray
+git commit -m "Production deployment ready - MindAlchemy"
+if ($LASTEXITCODE -ne 0) {
+    throw "Failed to create commit"
+}
+
+# Ensure we're on main branch
+git branch -M main 2>&1 | Out-Null
 
 # Push using token
+Write-Host "Pushing to GitHub..." -ForegroundColor Gray
 $pushUrl = $repoUrl -replace "https://", "https://$GitHubToken@"
 git remote set-url origin $pushUrl
 git push -u origin main --force
