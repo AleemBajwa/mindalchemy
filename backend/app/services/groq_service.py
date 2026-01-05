@@ -14,32 +14,40 @@ class GroqService:
     def __init__(self):
         # Only initialize Groq client if API key is provided
         if settings.groq_api_key and settings.groq_api_key != "your_groq_api_key_here":
+            self.client = None
             try:
-                # Initialize Groq client - explicitly only pass api_key
-                # Some environments may inject proxies, so we use **kwargs filtering
-                import inspect
-                sig = inspect.signature(Groq.__init__)
-                valid_params = set(sig.parameters.keys())
-                
-                # Only pass api_key if it's a valid parameter
-                init_kwargs = {}
-                if 'api_key' in valid_params:
-                    init_kwargs['api_key'] = settings.groq_api_key
-                else:
-                    # Fallback for older versions
-                    init_kwargs = {'api_key': settings.groq_api_key}
-                
-                self.client = Groq(**init_kwargs)
+                # Try standard initialization
+                self.client = Groq(api_key=settings.groq_api_key)
                 logger.info("Groq client initialized successfully")
+            except TypeError as e:
+                # Handle proxies parameter error - this happens in some Groq versions
+                if "proxies" in str(e):
+                    logger.warning(f"Groq client proxies error detected, trying workaround: {e}")
+                    try:
+                        # Workaround: Create client without any extra parameters
+                        # Some Groq versions don't accept proxies parameter
+                        import os
+                        # Temporarily remove any proxy-related env vars that might interfere
+                        old_proxy = os.environ.pop('HTTP_PROXY', None)
+                        old_https_proxy = os.environ.pop('HTTPS_PROXY', None)
+                        try:
+                            self.client = Groq(api_key=settings.groq_api_key)
+                            logger.info("Groq client initialized with proxy workaround")
+                        finally:
+                            # Restore proxy env vars if they existed
+                            if old_proxy:
+                                os.environ['HTTP_PROXY'] = old_proxy
+                            if old_https_proxy:
+                                os.environ['HTTPS_PROXY'] = old_https_proxy
+                    except Exception as e2:
+                        logger.error(f"Workaround also failed: {e2}")
+                        self.client = None
+                else:
+                    logger.error(f"Failed to initialize Groq client: {e}")
+                    self.client = None
             except Exception as e:
                 logger.error(f"Failed to initialize Groq client: {e}")
-                # Try simple initialization as fallback
-                try:
-                    self.client = Groq(api_key=settings.groq_api_key)
-                    logger.info("Groq client initialized with fallback method")
-                except Exception as e2:
-                    logger.error(f"Fallback initialization also failed: {e2}")
-                    self.client = None
+                self.client = None
         else:
             logger.warning("Groq API key not configured. AI chat will not work.")
             self.client = None
