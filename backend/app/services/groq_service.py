@@ -15,21 +15,31 @@ class GroqService:
         # Only initialize Groq client if API key is provided
         if settings.groq_api_key and settings.groq_api_key != "your_groq_api_key_here":
             try:
-                # Initialize Groq client with only api_key parameter (no proxies)
-                self.client = Groq(api_key=settings.groq_api_key)
+                # Initialize Groq client - explicitly only pass api_key
+                # Some environments may inject proxies, so we use **kwargs filtering
+                import inspect
+                sig = inspect.signature(Groq.__init__)
+                valid_params = set(sig.parameters.keys())
+                
+                # Only pass api_key if it's a valid parameter
+                init_kwargs = {}
+                if 'api_key' in valid_params:
+                    init_kwargs['api_key'] = settings.groq_api_key
+                else:
+                    # Fallback for older versions
+                    init_kwargs = {'api_key': settings.groq_api_key}
+                
+                self.client = Groq(**init_kwargs)
                 logger.info("Groq client initialized successfully")
-            except TypeError as e:
-                # Handle version compatibility issues
-                logger.error(f"Failed to initialize Groq client (version issue): {e}")
-                try:
-                    # Try alternative initialization without any extra parameters
-                    self.client = Groq(api_key=settings.groq_api_key)
-                except Exception as e2:
-                    logger.error(f"Failed to initialize Groq client: {e2}")
-                    self.client = None
             except Exception as e:
                 logger.error(f"Failed to initialize Groq client: {e}")
-                self.client = None
+                # Try simple initialization as fallback
+                try:
+                    self.client = Groq(api_key=settings.groq_api_key)
+                    logger.info("Groq client initialized with fallback method")
+                except Exception as e2:
+                    logger.error(f"Fallback initialization also failed: {e2}")
+                    self.client = None
         else:
             logger.warning("Groq API key not configured. AI chat will not work.")
             self.client = None
