@@ -3,32 +3,36 @@ Groq API Service for MindAlchemy
 """
 import os
 import logging
+
+# CRITICAL: Patch httpx BEFORE importing Groq to fix proxies error
+import httpx
+
+# Store original __init__ methods
+_original_httpx_client_init = httpx.Client.__init__
+_original_async_client_init = httpx.AsyncClient.__init__
+
+# Patch httpx.Client to remove proxies parameter
+def _patched_httpx_client_init(self, *args, **kwargs):
+    kwargs.pop('proxies', None)
+    return _original_httpx_client_init(self, *args, **kwargs)
+
+# Patch httpx.AsyncClient to remove proxies parameter  
+def _patched_async_client_init(self, *args, **kwargs):
+    kwargs.pop('proxies', None)
+    return _original_async_client_init(self, *args, **kwargs)
+
+# Apply patches
+httpx.Client.__init__ = _patched_httpx_client_init
+httpx.AsyncClient.__init__ = _patched_async_client_init
+
+# NOW import Groq - it will use the patched httpx
+from groq import Groq
+
 from app.config import settings
 from app.services.crisis_resources import get_crisis_resources, get_available_countries
 from typing import List, Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
-
-# Fix for Groq proxies error - MUST patch before any imports
-import httpx
-
-# Patch httpx.Client FIRST - before Groq imports it
-_original_httpx_client_init = httpx.Client.__init__
-def _patched_httpx_client_init(self, *args, **kwargs):
-    # Remove proxies - this is what causes the error
-    kwargs.pop('proxies', None)
-    return _original_httpx_client_init(self, *args, **kwargs)
-httpx.Client.__init__ = _patched_httpx_client_init
-
-# Patch httpx.AsyncClient too
-_original_async_client_init = httpx.AsyncClient.__init__
-def _patched_async_client_init(self, *args, **kwargs):
-    kwargs.pop('proxies', None)
-    return _original_async_client_init(self, *args, **kwargs)
-httpx.AsyncClient.__init__ = _patched_async_client_init
-
-# NOW import Groq - it will use the patched httpx
-from groq import Groq
 
 class GroqService:
     def __init__(self):
