@@ -13,35 +13,36 @@ logger = logging.getLogger(__name__)
 class GroqService:
     def __init__(self):
         # Only initialize Groq client if API key is provided
+        self.client = None
         if settings.groq_api_key and settings.groq_api_key != "your_groq_api_key_here":
-            self.client = None
             try:
-                # Try standard initialization
-                self.client = Groq(api_key=settings.groq_api_key)
-                logger.info("Groq client initialized successfully")
+                # Remove proxy env vars that might cause issues with Groq library
+                import os
+                old_http_proxy = os.environ.pop('HTTP_PROXY', None)
+                old_https_proxy = os.environ.pop('HTTPS_PROXY', None)
+                old_http_proxy_lower = os.environ.pop('http_proxy', None)
+                old_https_proxy_lower = os.environ.pop('https_proxy', None)
+                
+                try:
+                    # Initialize Groq client - the library internally uses httpx which may try to use proxies
+                    self.client = Groq(api_key=settings.groq_api_key)
+                    logger.info("Groq client initialized successfully")
+                finally:
+                    # Restore proxy env vars if they existed
+                    if old_http_proxy:
+                        os.environ['HTTP_PROXY'] = old_http_proxy
+                    if old_https_proxy:
+                        os.environ['HTTPS_PROXY'] = old_https_proxy
+                    if old_http_proxy_lower:
+                        os.environ['http_proxy'] = old_http_proxy_lower
+                    if old_https_proxy_lower:
+                        os.environ['https_proxy'] = old_https_proxy_lower
             except TypeError as e:
-                # Handle proxies parameter error - this happens in some Groq versions
+                # Handle proxies parameter error - Groq library version issue
                 if "proxies" in str(e):
-                    logger.warning(f"Groq client proxies error detected, trying workaround: {e}")
-                    try:
-                        # Workaround: Create client without any extra parameters
-                        # Some Groq versions don't accept proxies parameter
-                        import os
-                        # Temporarily remove any proxy-related env vars that might interfere
-                        old_proxy = os.environ.pop('HTTP_PROXY', None)
-                        old_https_proxy = os.environ.pop('HTTPS_PROXY', None)
-                        try:
-                            self.client = Groq(api_key=settings.groq_api_key)
-                            logger.info("Groq client initialized with proxy workaround")
-                        finally:
-                            # Restore proxy env vars if they existed
-                            if old_proxy:
-                                os.environ['HTTP_PROXY'] = old_proxy
-                            if old_https_proxy:
-                                os.environ['HTTPS_PROXY'] = old_https_proxy
-                    except Exception as e2:
-                        logger.error(f"Workaround also failed: {e2}")
-                        self.client = None
+                    logger.warning(f"Groq client proxies error - this is a known issue with some Groq versions")
+                    logger.warning("AI chat will be disabled. Consider updating groq library version.")
+                    self.client = None
                 else:
                     logger.error(f"Failed to initialize Groq client: {e}")
                     self.client = None
