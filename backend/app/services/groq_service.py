@@ -39,40 +39,31 @@ class GroqService:
         # Only initialize Groq client if API key is provided
         self.client = None
         if settings.groq_api_key and settings.groq_api_key != "your_groq_api_key_here":
+            # Remove ALL proxy environment variables - this is critical
+            proxy_vars = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 
+                         'ALL_PROXY', 'all_proxy', 'NO_PROXY', 'no_proxy']
+            saved_proxies = {}
+            for var in proxy_vars:
+                if var in os.environ:
+                    saved_proxies[var] = os.environ.pop(var)
+            
             try:
-                # Remove ALL proxy environment variables before initialization
-                proxy_vars = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 
-                             'ALL_PROXY', 'all_proxy', 'NO_PROXY', 'no_proxy']
-                saved_proxies = {}
-                for var in proxy_vars:
-                    if var in os.environ:
-                        saved_proxies[var] = os.environ.pop(var)
-                
-                try:
-                    # Initialize Groq - the patched version will handle proxies
-                    self.client = Groq(api_key=settings.groq_api_key)
-                    logger.info("Groq client initialized successfully")
-                except Exception as init_error:
-                    error_str = str(init_error)
-                    if "proxies" in error_str.lower():
-                        logger.warning("Groq proxies error - trying alternative initialization")
-                        # Last resort: try without any parameters that might cause issues
-                        try:
-                            # Create a minimal client
-                            self.client = Groq(api_key=settings.groq_api_key)
-                        except:
-                            logger.warning("Groq initialization failed - AI chat disabled")
-                            self.client = None
-                    else:
-                        logger.warning(f"Groq initialization failed: {init_error}")
-                        self.client = None
-                finally:
-                    # Restore proxy env vars
-                    for var, value in saved_proxies.items():
-                        os.environ[var] = value
+                # Initialize Groq - httpx is already patched above
+                self.client = Groq(api_key=settings.groq_api_key)
+                logger.info("Groq client initialized successfully")
             except Exception as e:
-                logger.warning(f"Groq client setup failed (non-critical): {e}")
+                # Log but don't fail - app continues without AI chat
+                error_msg = str(e)
+                if "proxies" in error_msg.lower():
+                    logger.warning("Groq client proxies error - AI chat will be disabled")
+                    logger.warning("This is a known compatibility issue. App will continue without AI features.")
+                else:
+                    logger.warning(f"Groq client initialization failed: {e}")
                 self.client = None
+            finally:
+                # Always restore proxy env vars
+                for var, value in saved_proxies.items():
+                    os.environ[var] = value
         else:
             logger.warning("Groq API key not configured. AI chat will not work.")
             self.client = None
