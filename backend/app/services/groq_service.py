@@ -9,41 +9,26 @@ from typing import List, Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
-# Fix for Groq proxies error - patch httpx first, then Groq
-def patch_for_groq():
-    """Patch httpx and Groq to handle proxies parameter error"""
-    try:
-        # First patch httpx.Client to ignore proxies
-        import httpx
-        original_httpx_init = httpx.Client.__init__
-        def patched_httpx_init(self, *args, **kwargs):
-            kwargs.pop('proxies', None)
-            return original_httpx_init(self, *args, **kwargs)
-        httpx.Client.__init__ = patched_httpx_init
-        
-        # Also patch httpx.AsyncClient
-        original_async_init = httpx.AsyncClient.__init__
-        def patched_async_init(self, *args, **kwargs):
-            kwargs.pop('proxies', None)
-            return original_async_init(self, *args, **kwargs)
-        httpx.AsyncClient.__init__ = patched_async_init
-        
-        # Now patch Groq Client
-        from groq import Groq
-        original_groq_init = Groq.__init__
-        def patched_groq_init(self, *args, **kwargs):
-            kwargs.pop('proxies', None)
-            return original_groq_init(self, *args, **kwargs)
-        Groq.__init__ = patched_groq_init
-        
-        return Groq
-    except Exception as e:
-        logger.warning(f"Could not patch libraries: {e}")
-        from groq import Groq
-        return Groq
+# Fix for Groq proxies error - MUST patch before any imports
+import httpx
 
-# Patch and import
-Groq = patch_for_groq()
+# Patch httpx.Client FIRST - before Groq imports it
+_original_httpx_client_init = httpx.Client.__init__
+def _patched_httpx_client_init(self, *args, **kwargs):
+    # Remove proxies - this is what causes the error
+    kwargs.pop('proxies', None)
+    return _original_httpx_client_init(self, *args, **kwargs)
+httpx.Client.__init__ = _patched_httpx_client_init
+
+# Patch httpx.AsyncClient too
+_original_async_client_init = httpx.AsyncClient.__init__
+def _patched_async_client_init(self, *args, **kwargs):
+    kwargs.pop('proxies', None)
+    return _original_async_client_init(self, *args, **kwargs)
+httpx.AsyncClient.__init__ = _patched_async_client_init
+
+# NOW import Groq - it will use the patched httpx
+from groq import Groq
 
 class GroqService:
     def __init__(self):
