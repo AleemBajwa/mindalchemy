@@ -3,12 +3,46 @@ Groq API Service for MindAlchemy
 """
 import os
 import logging
-from groq import Groq
 from app.config import settings
 from app.services.crisis_resources import get_crisis_resources, get_available_countries
 from typing import List, Dict, Optional, Tuple
 
 logger = logging.getLogger(__name__)
+
+# Fix for Groq proxies error - patch before importing
+def patch_groq_client():
+    """Patch Groq Client to handle proxies parameter error"""
+    try:
+        from groq import Groq
+        import inspect
+        
+        # Get original __init__
+        original_init = Groq.__init__
+        
+        # Create patched version that filters out proxies
+        def patched_init(self, *args, **kwargs):
+            # Remove proxies if present
+            kwargs.pop('proxies', None)
+            # Also check if httpx_client is being passed and patch it
+            if 'httpx_client' in kwargs:
+                httpx_client = kwargs['httpx_client']
+                if hasattr(httpx_client, '__init__'):
+                    original_httpx_init = httpx_client.__init__
+                    def patched_httpx_init(self_httpx, *args_httpx, **kwargs_httpx):
+                        kwargs_httpx.pop('proxies', None)
+                        return original_httpx_init(self_httpx, *args_httpx, **kwargs_httpx)
+                    httpx_client.__init__ = patched_httpx_init
+            return original_init(self, *args, **kwargs)
+        
+        Groq.__init__ = patched_init
+        return Groq
+    except Exception as e:
+        logger.warning(f"Could not patch Groq client: {e}")
+        from groq import Groq
+        return Groq
+
+# Patch and import
+Groq = patch_groq_client()
 
 class GroqService:
     def __init__(self):
@@ -16,8 +50,7 @@ class GroqService:
         self.client = None
         if settings.groq_api_key and settings.groq_api_key != "your_groq_api_key_here":
             try:
-                # Aggressive fix: Remove ALL proxy-related environment variables
-                # Railway or other platforms may set these and Groq library tries to use them
+                # Remove ALL proxy environment variables before initialization
                 proxy_vars = ['HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy', 
                              'ALL_PROXY', 'all_proxy', 'NO_PROXY', 'no_proxy']
                 saved_proxies = {}
@@ -26,29 +59,29 @@ class GroqService:
                         saved_proxies[var] = os.environ.pop(var)
                 
                 try:
-                    # Try to patch httpx to not use proxies
-                    import httpx
-                    # Create a custom transport that ignores proxies
-                    original_init = httpx.Client.__init__
-                    def patched_init(self, *args, **kwargs):
-                        kwargs.pop('proxies', None)
-                        return original_init(self, *args, **kwargs)
-                    httpx.Client.__init__ = patched_init
-                    
-                    # Now initialize Groq
+                    # Initialize Groq - the patched version will handle proxies
                     self.client = Groq(api_key=settings.groq_api_key)
                     logger.info("Groq client initialized successfully")
                 except Exception as init_error:
-                    logger.warning(f"Groq initialization failed (non-critical): {init_error}")
-                    logger.warning("App will continue without AI chat functionality")
-                    self.client = None
+                    error_str = str(init_error)
+                    if "proxies" in error_str.lower():
+                        logger.warning("Groq proxies error - trying alternative initialization")
+                        # Last resort: try without any parameters that might cause issues
+                        try:
+                            # Create a minimal client
+                            self.client = Groq(api_key=settings.groq_api_key)
+                        except:
+                            logger.warning("Groq initialization failed - AI chat disabled")
+                            self.client = None
+                    else:
+                        logger.warning(f"Groq initialization failed: {init_error}")
+                        self.client = None
                 finally:
                     # Restore proxy env vars
                     for var, value in saved_proxies.items():
                         os.environ[var] = value
             except Exception as e:
                 logger.warning(f"Groq client setup failed (non-critical): {e}")
-                logger.warning("App will continue without AI chat functionality")
                 self.client = None
         else:
             logger.warning("Groq API key not configured. AI chat will not work.")
