@@ -6,6 +6,7 @@ import logging
 
 # CRITICAL: Patch httpx BEFORE importing Groq to fix proxies error
 import httpx
+from rapidfuzz import fuzz, process
 
 # Store original __init__ methods
 _original_httpx_client_init = httpx.Client.__init__
@@ -80,6 +81,13 @@ Your approach:
 4. Guide users through CBT/DBT exercises when appropriate
 5. Maintain professional boundaries
 
+IMPORTANT - Understanding User Messages:
+- Be tolerant of typos, misspellings, and grammatical errors
+- Focus on understanding the user's intent and emotional state, not perfect spelling
+- Interpret messages intelligently even when words are misspelled (e.g., "Sucidie" = "Suicide", "anxity" = "Anxiety")
+- Respond naturally and helpfully without correcting spelling unless the user asks
+- Use context clues to understand what the user means, even with errors
+
 Always prioritize user safety. If crisis is detected, provide immediate resources and encourage professional help.
 
 Important: You are a support tool, not a replacement for professional therapy. For severe mental health issues, always encourage users to seek professional help."""
@@ -97,28 +105,59 @@ Important: You are a support tool, not a replacement for professional therapy. F
         return prompt
 
     def detect_crisis(self, message: str) -> Tuple[bool, str]:
-        """Detect if user is in crisis - returns (is_crisis, risk_level)"""
+        """
+        Detect if user is in crisis - returns (is_crisis, risk_level)
+        Uses fuzzy matching to catch typos and misspellings
+        """
         crisis_keywords_high = [
             "suicide", "kill myself", "end my life", "hurt myself",
             "want to die", "no point living", "self harm", "cutting",
-            "overdose", "jump off", "hang myself"
+            "overdose", "jump off", "hang myself",
+            "end it all", "not worth living", "better off dead"
         ]
         
         crisis_keywords_medium = [
-            "want to die", "no point", "can't go on", "give up"
+            "want to die", "no point", "can't go on", "give up",
+            "hopeless", "nothing matters", "life is pointless"
         ]
         
         message_lower = message.lower()
         
-        # Check for high-risk keywords
+        # First: Exact match (fastest, most reliable)
         for keyword in crisis_keywords_high:
             if keyword in message_lower:
                 return True, "high"
         
-        # Check for medium-risk keywords
         for keyword in crisis_keywords_medium:
             if keyword in message_lower:
                 return True, "medium"
+        
+        # Second: Fuzzy matching for typos (catches misspellings)
+        # Split message into words and check each word/phrase against keywords
+        words = message_lower.split()
+        
+        # Check individual words with fuzzy matching (80% similarity threshold)
+        for word in words:
+            # Check against high-risk keywords
+            for keyword in crisis_keywords_high:
+                # For single-word keywords, use word similarity
+                if len(keyword.split()) == 1:
+                    similarity = fuzz.ratio(word, keyword)
+                    if similarity >= 80:  # 80% similarity threshold
+                        logger.info(f"Fuzzy match detected: '{word}' matches '{keyword}' (similarity: {similarity}%)")
+                        return True, "high"
+        
+        # Check phrases (2-3 word combinations) against multi-word keywords
+        for i in range(len(words)):
+            for j in range(i + 1, min(i + 4, len(words) + 1)):  # Check 2-3 word phrases
+                phrase = " ".join(words[i:j])
+                for keyword in crisis_keywords_high + crisis_keywords_medium:
+                    if len(keyword.split()) > 1:  # Multi-word keyword
+                        similarity = fuzz.ratio(phrase, keyword)
+                        if similarity >= 75:  # Slightly lower threshold for phrases
+                            logger.info(f"Fuzzy phrase match: '{phrase}' matches '{keyword}' (similarity: {similarity}%)")
+                            risk_level = "high" if keyword in crisis_keywords_high else "medium"
+                            return True, risk_level
         
         return False, "none"
 

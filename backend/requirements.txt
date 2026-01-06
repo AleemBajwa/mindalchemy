@@ -13,3 +13,4 @@ apscheduler==3.10.4
 psycopg2-binary==2.9.9
 httpx==0.28.1
 mangum==0.17.0
+rapidfuzz==3.9.1
