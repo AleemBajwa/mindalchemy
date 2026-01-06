@@ -43,6 +43,12 @@ export default function Resources() {
       title: 'Understanding Anxiety: Symptoms and Causes',
       category: 'anxiety',
       summary: 'Learn about anxiety disorders, common symptoms, and what causes anxiety. Discover evidence-based strategies for managing anxiety.',
+      content: [
+        'Anxiety is a normal human response to threat, but it can become a problem when it is intense, frequent, and interferes with daily life.',
+        'Common symptoms include racing thoughts, physical tension, trouble sleeping, irritability, and difficulty concentrating.',
+        'Anxiety disorders are highly treatable. CBT and exposure‑based approaches teach you to notice anxious thoughts, challenge unhelpful predictions, and gradually face feared situations.',
+        'Lifestyle habits such as regular movement, predictable sleep, limiting caffeine, and basic breathing practices can lower your baseline level of anxiety.'
+      ],
       readTime: '5 min',
       icon: '😰'
     },
@@ -51,6 +57,12 @@ export default function Resources() {
       title: 'Coping with Depression: A Comprehensive Guide',
       category: 'depression',
       summary: 'Understand depression, its symptoms, and effective treatment options. Learn self-help strategies and when to seek professional help.',
+      content: [
+        'Depression is more than sadness; it often shows up as exhaustion, loss of interest, feeling numb, or believing that nothing will improve.',
+        'Helpful first steps include building a simple daily routine, scheduling one small meaningful activity per day, and reaching out to at least one supportive person.',
+        'Evidence‑based treatments include CBT, behavioral activation, interpersonal therapy, and medication when appropriate.',
+        'Seek urgent help immediately if you notice thoughts of harming yourself, feeling hopeless, or being unable to care for basic needs.'
+      ],
       readTime: '7 min',
       icon: '😔'
     },
@@ -59,6 +71,12 @@ export default function Resources() {
       title: 'Stress Management Techniques That Work',
       category: 'stress',
       summary: 'Explore proven stress management techniques including breathing exercises, time management, and lifestyle changes.',
+      content: [
+        'Stress becomes a problem when demands chronically exceed the resources you feel you have.',
+        'Quick tools include paced breathing (inhale for 4, exhale for 6–8), brief movement breaks, and micro‑pauses before reacting to emails or messages.',
+        'Longer‑term strategies involve clarifying priorities, setting boundaries, delegating where possible, and building regular recovery time into your week.',
+        'Notice early warning signs—poor sleep, irritability, procrastination—so you can intervene before burnout sets in.'
+      ],
       readTime: '6 min',
       icon: '😓'
     },
@@ -67,6 +85,12 @@ export default function Resources() {
       title: 'Introduction to Mindfulness Meditation',
       category: 'mindfulness',
       summary: 'Learn the basics of mindfulness meditation, its benefits, and how to start your practice today.',
+      content: [
+        'Mindfulness means paying attention to the present moment on purpose, with curiosity rather than judgment.',
+        'A simple starter practice is to sit comfortably and place attention on the feeling of the breath for 5 minutes, gently returning whenever the mind wanders.',
+        'Common benefits include greater emotional awareness, less reactivity, and a stronger ability to choose responses instead of reacting on autopilot.',
+        'Consistency matters more than length—aim for short, regular practices and bring mindful awareness into everyday activities like walking or eating.'
+      ],
       readTime: '8 min',
       icon: '🧘'
     },
@@ -75,6 +99,12 @@ export default function Resources() {
       title: 'Cognitive Behavioral Therapy (CBT) Basics',
       category: 'cbt',
       summary: 'Discover how CBT works, its core principles, and how to apply CBT techniques in your daily life.',
+      content: [
+        'CBT is based on the idea that thoughts, emotions, and behaviors are linked; by changing one part of the cycle, you influence the others.',
+        'A key skill is catching automatic thoughts, writing them down, and gently questioning how accurate, helpful, or complete they really are.',
+        'Behavioral experiments—small planned actions—help you test out new beliefs in real life instead of trusting anxiety or low mood as facts.',
+        'CBT works best when you practice skills between sessions, like using thought records or scheduling specific coping actions.'
+      ],
       readTime: '10 min',
       icon: '🧠'
     },
@@ -83,6 +113,12 @@ export default function Resources() {
       title: 'DBT Skills for Emotional Regulation',
       category: 'dbt',
       summary: 'Learn Dialectical Behavior Therapy skills for managing intense emotions and improving relationships.',
+      content: [
+        'DBT teaches four main skill sets: mindfulness, distress tolerance, emotion regulation, and interpersonal effectiveness.',
+        'Emotion regulation skills include naming emotions, checking the facts, and building a life that reduces vulnerability (sleep, food, movement, substances).',
+        'Distress‑tolerance tools focus on getting through emotional storms safely using grounding, self‑soothing, and distraction that does not make problems worse.',
+        'Interpersonal effectiveness skills help you ask for what you need, say no, and keep self‑respect in relationships.'
+      ],
       readTime: '9 min',
       icon: '💙'
     },
@@ -91,6 +127,13 @@ export default function Resources() {
       title: 'Improving Sleep Quality: A Complete Guide',
       category: 'sleep',
       summary: 'Understand sleep hygiene, common sleep problems, and evidence-based strategies for better sleep.',
+      content: [
+        'Start with a consistent schedule: aim to wake up and go to bed at roughly the same time every day, even on weekends.',
+        'Create a wind‑down routine for the last 30–60 minutes before bed—dim lights, avoid heavy conversations, and switch from screens to calming activities.',
+        'Keep the bed for sleep and intimacy only. If you cannot fall asleep within about 20 minutes, get up, do something quiet in low light, and return to bed when sleepy.',
+        'Limit caffeine after mid‑afternoon, avoid large meals and alcohol close to bedtime, and try gentle movement or stretching during the day.',
+        'If sleep problems last more than a few weeks or significantly impair your functioning, consider discussing CBT‑I (insomnia treatment) or a medical evaluation with a professional.'
+      ],
       readTime: '6 min',
       icon: '😴'
     },
@@ -99,6 +142,12 @@ export default function Resources() {
       title: 'Building Healthy Relationships',
       category: 'relationships',
       summary: 'Learn communication skills, boundary setting, and strategies for maintaining healthy relationships.',
+      content: [
+        'Healthy relationships balance connection with autonomy: both people feel heard, respected, and able to be honest.',
+        'Clear communication often starts with “I” statements—describing your experience rather than blaming the other person.',
+        'Boundaries are limits that protect your energy, values, and safety; saying no is an act of clarity, not selfishness.',
+        'Repair is more important than never arguing: noticing when something feels off, naming it, and working together to make amends.'
+      ],
       readTime: '7 min',
       icon: '🤝'
     },
@@ -107,6 +156,12 @@ export default function Resources() {
       title: 'Panic Attacks: What They Are and How to Cope',
       category: 'anxiety',
       summary: 'Understand panic attacks, their symptoms, and effective coping strategies including grounding techniques.',
+      content: [
+        'Panic attacks are sudden surges of intense fear accompanied by physical sensations such as racing heart, shortness of breath, dizziness, or shaking.',
+        'Although terrifying, panic symptoms themselves are not dangerous; they are your body’s alarm system misfiring.',
+        'Grounding skills—naming five things you can see, four you can touch, three you can hear, two you can smell, one you can taste—help anchor you in the present.',
+        'Long‑term improvement comes from gradually facing feared sensations and situations instead of avoiding them, often with the support of CBT or exposure therapy.'
+      ],
       readTime: '5 min',
       icon: '😰'
     },
@@ -115,6 +170,12 @@ export default function Resources() {
       title: 'Self-Care Strategies for Mental Health',
       category: 'mindfulness',
       summary: 'Discover practical self-care strategies that support your mental health and overall well-being.',
+      content: [
+        'Self‑care is about caring for your future self, not just comfort in the moment.',
+        'Core pillars include sleep, food, movement, social connection, and meaningful rest (activities that refill you rather than just distract).',
+        'It helps to start tiny: one glass of water, a five‑minute walk, or sending one message to a supportive person can be enough to build momentum.',
+        'Notice the difference between short‑term relief that creates new problems (e.g., over‑using substances) and small actions that genuinely stabilize you.'
+      ],
       readTime: '6 min',
       icon: '💚'
     },
@@ -123,6 +184,12 @@ export default function Resources() {
       title: 'Challenging Negative Thoughts: A CBT Approach',
       category: 'cbt',
       summary: 'Learn how to identify and challenge negative thought patterns using cognitive restructuring techniques.',
+      content: [
+        'Start by catching negative thoughts in real time and writing them down verbatim—even if they feel harsh or extreme.',
+        'Look for common thinking styles such as all‑or‑nothing thinking, catastrophizing, mind‑reading, or discounting the positive.',
+        'Ask balanced questions: “What evidence supports this? What evidence points in another direction? What would I say to a friend in this situation?”',
+        'The goal is not to force positive thinking but to move toward more accurate, flexible, and compassionate thoughts that open up new choices.'
+      ],
       readTime: '8 min',
       icon: '🧠'
     },
@@ -131,6 +198,12 @@ export default function Resources() {
       title: 'Managing Social Anxiety',
       category: 'anxiety',
       summary: 'Explore strategies for managing social anxiety, including exposure techniques and cognitive reframing.',
+      content: [
+        'Social anxiety often centers on a fear of embarrassment, judgment, or rejection in social situations.',
+        'Helpful strategies include gently challenging predictions about what others think and focusing attention outward on the conversation instead of on internal sensations.',
+        'Gradual exposure—starting with easier situations and working up to more challenging ones—teaches your brain that you can cope without avoiding.',
+        'Practicing small skills like prepared conversation starters or brief eye contact can make real‑world experiments feel safer.'
+      ],
       readTime: '7 min',
       icon: '😰'
     },
@@ -139,6 +212,12 @@ export default function Resources() {
       title: 'Understanding Your Emotions',
       category: 'dbt',
       summary: 'Learn to identify, understand, and regulate your emotions using DBT emotion regulation skills.',
+      content: [
+        'Emotions carry information about your needs, values, and the environment; they are signals, not problems to erase.',
+        'Naming emotions accurately (“I feel disappointed and anxious,” not just “bad”) already reduces intensity for many people.',
+        'DBT suggests checking whether emotion‑driven urges fit the facts of the situation; if they do not, you can practice “opposite action”—doing the opposite of what the emotion urges.',
+        'Caring for your body (sleep, food, movement, substances) makes emotions more manageable and less likely to swing to extremes.'
+      ],
       readTime: '6 min',
       icon: '💙'
     },
@@ -147,6 +226,12 @@ export default function Resources() {
       title: 'Work-Life Balance and Stress',
       category: 'stress',
       summary: 'Discover strategies for achieving better work-life balance and reducing work-related stress.',
+      content: [
+        'Work–life balance is less about perfect equality and more about making sure work does not consume all of your time, energy, and identity.',
+        'Start by noticing your current pattern: when do you feel most drained, and what obligations could be renegotiated, delayed, or delegated?',
+        'Introduce small boundaries such as protected offline time, meeting‑free blocks, or a shutdown ritual that marks the end of the workday.',
+        'Reinvest saved time into recovery activities—connection, hobbies, movement, or quiet—that genuinely refill you.'
+      ],
       readTime: '5 min',
       icon: '😓'
     },
@@ -155,6 +240,12 @@ export default function Resources() {
       title: 'Grief and Loss: Coping Strategies',
       category: 'depression',
       summary: 'Understand the grieving process and learn healthy ways to cope with loss and grief.',
+      content: [
+        'Grief is a natural response to losing someone or something important; it does not follow a neat set of stages.',
+        'Common experiences include waves of sadness, numbness, anger, relief, guilt, or confusion—often cycling quickly.',
+        'Helpful coping can include telling the story of your loss to trusted people, creating rituals of remembrance, and allowing both painful and warm memories.',
+        'Seek additional support if grief leaves you unable to function in daily life for a long period, or if you notice strong urges to harm yourself.'
+      ],
       readTime: '6 min',
       icon: '😔'
     }
@@ -332,9 +423,15 @@ export default function Resources() {
                 ✕
               </button>
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              {activeArticle.summary}
-            </p>
+            <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+              {Array.isArray(activeArticle.content) ? (
+                activeArticle.content.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))
+              ) : (
+                <p>{activeArticle.summary}</p>
+              )}
+            </div>
             <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
               <span>⏱️ Estimated reading time: {activeArticle.readTime}</span>
               <button
