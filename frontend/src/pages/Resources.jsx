@@ -6,7 +6,7 @@ export default function Resources() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [bookmarks, setBookmarks] = useState([])
   const [showBookmarksOnly, setShowBookmarksOnly] = useState(false)
-  const [expandedArticleId, setExpandedArticleId] = useState(null)
+  const [activeArticle, setActiveArticle] = useState(null)
 
   useEffect(() => {
     const saved = localStorage.getItem('resource_bookmarks')
@@ -242,13 +242,11 @@ export default function Resources() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredArticles.map((article) => {
-            const isExpanded = expandedArticleId === article.id
-            return (
-              <div
-                key={article.id}
-                className="bg-gradient-to-br from-white/80 via-amber-50/50 to-orange-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg shadow-amber-500/10 dark:shadow-gray-900/50 p-6 hover:shadow-xl hover:shadow-amber-500/20 hover:scale-[1.02] transition-all duration-300 border border-amber-200/30 dark:border-gray-700 relative group"
-              >
+          {filteredArticles.map((article) => (
+            <div
+              key={article.id}
+              className="bg-gradient-to-br from-white/80 via-amber-50/50 to-orange-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg shadow-amber-500/10 dark:shadow-gray-900/50 p-6 hover:shadow-xl hover:shadow-amber-500/20 hover:scale-[1.02] transition-all duration-300 border border-amber-200/30 dark:border-gray-700 relative group"
+            >
               <button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -274,27 +272,21 @@ export default function Resources() {
                   </span>
                 </div>
               </div>
-              <p
-                className={`text-sm text-gray-600 dark:text-gray-400 mb-4 ${
-                  isExpanded ? '' : 'line-clamp-3'
-                }`}
-              >
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                 {article.summary}
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500 dark:text-gray-400">⏱️ {article.readTime}</span>
                 <button
                   className="text-primary text-sm font-semibold hover:underline"
-                  onClick={() =>
-                    setExpandedArticleId(isExpanded ? null : article.id)
-                  }
-                  aria-expanded={isExpanded}
+                  onClick={() => setActiveArticle(article)}
+                  aria-label={`Read more about ${article.title}`}
                 >
-                  {isExpanded ? 'Show Less ↑' : 'Read More →'}
+                  Read More →
                 </button>
               </div>
             </div>
-          )})}
+          ))}
         </div>
       )}
 
@@ -310,6 +302,51 @@ export default function Resources() {
           crisis, please seek immediate professional help.
         </p>
       </div>
+
+      {/* Article Detail Modal */}
+      {activeArticle && (
+        <div
+          className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="resource-article-title"
+        >
+          <div className="max-w-lg w-full bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3
+                  id="resource-article-title"
+                  className="text-xl font-semibold text-gray-900 dark:text-white mb-1"
+                >
+                  {activeArticle.title}
+                </h3>
+                <span className={`inline-flex items-center px-2 py-1 text-xs rounded-full ${categoryColors[activeArticle.category]}`}>
+                  {categories[activeArticle.category]}
+                </span>
+              </div>
+              <button
+                onClick={() => setActiveArticle(null)}
+                className="text-sm text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                aria-label="Close article details"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {activeArticle.summary}
+            </p>
+            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+              <span>⏱️ Estimated reading time: {activeArticle.readTime}</span>
+              <button
+                onClick={() => setActiveArticle(null)}
+                className="text-primary font-semibold hover:underline"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
