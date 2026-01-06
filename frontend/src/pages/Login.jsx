@@ -44,7 +44,9 @@ export default function Login() {
             <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
               MindAlchemy
             </h1>
-            <p className="text-gray-600 dark:text-gray-300 text-lg">Welcome back! Please sign in to continue.</p>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">
+              Welcome to MindAlchemy. Sign in to continue or create your first account.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
