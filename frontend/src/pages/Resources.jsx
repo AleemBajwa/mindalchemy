@@ -350,6 +350,3 @@ export default function Resources() {
     </div>
   )
 }
-
-/ /   T e s t  
- 
