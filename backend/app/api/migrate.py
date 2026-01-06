@@ -13,6 +13,7 @@ import os
 router = APIRouter()
 
 @router.post("/init")
+@router.get("/init")
 async def init_database():
     """
     Initialize database tables
