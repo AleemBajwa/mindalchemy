@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     groq_api_key: str = "your_groq_api_key_here"
     groq_model: str = "llama-3.1-8b-instant"  # Updated: llama-3.1-70b-versatile was decommissioned
     
-    # Database
+    # Database - Supports SQLite (local) and PostgreSQL (Vercel)
     database_url: str = "sqlite:///./ai_therapist.db"
     
     # JWT

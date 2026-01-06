@@ -1,3 +1,7 @@
+# Vercel Python Runtime Requirements
+# This file is used by Vercel to install dependencies for the serverless function
+
+# Copy all backend requirements
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 sqlalchemy==2.0.23
@@ -13,3 +17,4 @@ apscheduler==3.10.4
 psycopg2-binary==2.9.9
 httpx==0.28.1
 mangum==0.17.0
+

@@ -39,7 +39,7 @@ app.add_middleware(
 )
 
 # Import routers
-from app.api import auth, chat, mood, journal, user, cbt, goals, sleep, crisis, notifications, insights
+from app.api import auth, chat, mood, journal, user, cbt, goals, sleep, crisis, notifications, insights, migrate
 
 # Register routes
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
@@ -53,6 +53,7 @@ app.include_router(sleep.router, prefix="/api/sleep", tags=["Sleep"])
 app.include_router(crisis.router, prefix="/api/crisis", tags=["Crisis Resources"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["Notifications"])
 app.include_router(insights.router, prefix="/api/insights", tags=["AI Insights"])
+app.include_router(migrate.router, prefix="/api/migrate", tags=["Migration"])
 
 @app.get("/")
 async def root():
