@@ -167,44 +167,49 @@ export default function Layout() {
     <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-rose-50/30 via-purple-50/30 to-indigo-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 pb-20 overflow-x-hidden">
       {/* Header */}
       <header className="bg-gradient-to-r from-amber-50/90 via-rose-50/90 to-purple-50/90 dark:from-gray-800/90 dark:via-gray-800/90 dark:to-gray-800/90 backdrop-blur-xl border-b border-amber-200/30 dark:border-gray-700/50 shadow-lg shadow-amber-500/5 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-                <span className="text-white text-xl font-bold">M</span>
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-16 gap-2">
+            {/* Logo - shrink on mobile */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+                <span className="text-white text-lg sm:text-xl font-bold">M</span>
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                MindAlchemy
+              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="hidden sm:inline">MindAlchemy</span>
+                <span className="sm:hidden">MA</span>
               </h1>
             </div>
-            <div className="flex items-center gap-3">
-                  <button
-                    onClick={toggleDarkMode}
-                    className="p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105"
-                    title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                    aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-                  >
-                    {darkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5 text-indigo-600" />}
-                  </button>
-              
+            
+            {/* Right side buttons - responsive */}
+            <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
+              {/* Dark mode toggle - always visible */}
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 sm:p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105 flex-shrink-0"
+                title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+                aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {darkMode ? <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />}
+              </button>
+            
               {/* Notifications Bell */}
-              <div className="relative" ref={notificationsRef}>
+              <div className="relative flex-shrink-0" ref={notificationsRef}>
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
-                  className="relative p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105"
+                  className="relative p-2 sm:p-2.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200 hover:scale-105"
                   title="Notifications"
                 >
-                  <Bell className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
                   {unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                    <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-4 h-4 sm:w-5 sm:h-5 bg-red-500 text-white text-[10px] sm:text-xs font-bold rounded-full flex items-center justify-center">
                       {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                   )}
                 </button>
                 
-                {/* Notifications Dropdown */}
+                {/* Notifications Dropdown - responsive width */}
                 {showNotifications && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-hidden">
+                  <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-hidden">
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                       <h3 className="font-bold text-gray-900 dark:text-white">Notifications</h3>
                       <button
@@ -265,20 +270,26 @@ export default function Layout() {
                 )}
               </div>
               
+              {/* Profile button - icon only on mobile, text on larger screens */}
               <button
                 onClick={() => navigate('/settings')}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
-                title="Settings"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700/50 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all flex-shrink-0"
+                title={`Settings - ${user?.full_name || user?.email}`}
               >
-                <User className="w-4 h-4 text-gray-600 dark:text-gray-300" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{user?.full_name || user?.email}</span>
+                <User className="w-4 h-4 text-gray-600 dark:text-gray-300 flex-shrink-0" />
+                <span className="hidden md:inline text-sm font-medium text-gray-700 dark:text-gray-200 truncate max-w-[120px]">
+                  {user?.full_name || user?.email}
+                </span>
               </button>
+              
+              {/* Logout button - icon only on mobile */}
               <button
                 onClick={logout}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg transition-all duration-200 flex items-center gap-2"
+                className="px-2 sm:px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-lg transition-all duration-200 flex items-center gap-1 sm:gap-2 flex-shrink-0"
+                title="Logout"
               >
                 <LogOut className="w-4 h-4" />
-                Logout
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
