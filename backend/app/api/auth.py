@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User
-from app.schemas import UserCreate, UserResponse, UserUpdate, Token, LoginRequest
+from app.schemas import UserCreate, UserResponse, UserUpdate, Token, LoginRequest, ChangePasswordRequest
 from app.services.auth_service import verify_password, get_password_hash, create_access_token, decode_access_token
 
 router = APIRouter()
@@ -119,3 +119,32 @@ async def update_user_profile(
     logger.info(f"User {current_user.id} updated. Country is now: {current_user.country}")
     return current_user
 
+@router.post("/change-password")
+async def change_password(
+    password_data: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Change the current user's password.
+    Requires the current password and a new password, similar to major websites.
+    """
+    # Verify current password
+    if not verify_password(password_data.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+
+    # Basic new password validation
+    if len(password_data.new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be at least 8 characters long"
+        )
+
+    # Update password
+    current_user.hashed_password = get_password_hash(password_data.new_password)
+    db.commit()
+
+    return {"message": "Password updated successfully"}

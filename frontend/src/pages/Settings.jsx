@@ -6,12 +6,23 @@ import { Settings as SettingsIcon, Download, Trash2, AlertTriangle, User, Shield
 
 export default function Settings() {
   const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
+  const { user, logout, updateUserProfile } = useAuthStore()
   const [exporting, setExporting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
   const [deleting, setDeleting] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })
+
+  // Profile form state
+  const [fullName, setFullName] = useState(user?.full_name || '')
+  const [country, setCountry] = useState(user?.country || '')
+  const [updatingProfile, setUpdatingProfile] = useState(false)
+
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [changingPassword, setChangingPassword] = useState(false)
 
   const handleExport = async () => {
     setExporting(true)
@@ -37,6 +48,60 @@ export default function Settings() {
       setMessage({ type: 'error', text: 'Failed to export data. Please try again.' })
     } finally {
       setExporting(false)
+    }
+  }
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault()
+    setMessage({ type: '', text: '' })
+    setUpdatingProfile(true)
+    try {
+      const payload = {
+        full_name: fullName || null,
+        country: country || null
+      }
+      const response = await api.put('/auth/me', payload)
+      updateUserProfile(response.data)
+      setMessage({ type: 'success', text: 'Profile updated successfully.' })
+    } catch (error) {
+      console.error('Failed to update profile:', error)
+      const detail = error.response?.data?.detail || 'Failed to update profile. Please try again.'
+      setMessage({ type: 'error', text: detail })
+    } finally {
+      setUpdatingProfile(false)
+    }
+  }
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault()
+    setMessage({ type: '', text: '' })
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setMessage({ type: 'error', text: 'Please fill in all password fields.' })
+      return
+    }
+
+    if (newPassword !== confirmPassword) {
+      setMessage({ type: 'error', text: 'New password and confirmation do not match.' })
+      return
+    }
+
+    setChangingPassword(true)
+    try {
+      await api.post('/auth/change-password', {
+        current_password: currentPassword,
+        new_password: newPassword
+      })
+      setMessage({ type: 'success', text: 'Password updated successfully.' })
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (error) {
+      console.error('Failed to change password:', error)
+      const detail = error.response?.data?.detail || 'Failed to change password. Please try again.'
+      setMessage({ type: 'error', text: detail })
+    } finally {
+      setChangingPassword(false)
     }
   }
 
@@ -95,30 +160,106 @@ export default function Settings() {
         </div>
       )}
 
-      {/* Account Information */}
+      {/* Account Information & Profile Edit */}
       <div className="bg-gradient-to-br from-white/80 via-indigo-50/50 to-purple-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-indigo-500/10 dark:shadow-gray-900/50 p-6 border border-indigo-200/30 dark:border-gray-700">
         <div className="flex items-center gap-3 mb-4">
           <User className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Account Information</h3>
-        </div>
-        <div className="space-y-3">
           <div>
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Email</label>
-            <div className="text-gray-900 dark:text-white font-medium">{user?.email}</div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Account Information</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">View and update your basic profile details</p>
           </div>
-          {user?.full_name && (
-            <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Full Name</label>
-              <div className="text-gray-900 dark:text-white font-medium">{user.full_name}</div>
-            </div>
-          )}
-          {user?.country && (
-            <div>
-              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">Country</label>
-              <div className="text-gray-900 dark:text-white font-medium">{user.country}</div>
-            </div>
-          )}
         </div>
+        <form onSubmit={handleProfileUpdate} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Email</label>
+            <div className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900/60 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 font-medium">
+              {user?.email}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Full Name</label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Your full name"
+              className="w-full px-4 py-3 rounded-xl border border-indigo-200/60 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Country</label>
+            <input
+              type="text"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="Country (e.g., US, PK, IN)"
+              className="w-full px-4 py-3 rounded-xl border border-indigo-200/60 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={updatingProfile}
+              className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/40"
+            >
+              {updatingProfile ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Password Change */}
+      <div className="bg-gradient-to-br from-white/80 via-emerald-50/50 to-teal-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-emerald-500/10 dark:shadow-gray-900/50 p-6 border border-emerald-200/30 dark:border-gray-700">
+        <div className="flex items-center gap-3 mb-4">
+          <Shield className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          <div>
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Password & Security</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Change your password securely</p>
+          </div>
+        </div>
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Current Password</label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter your current password"
+              className="w-full px-4 py-3 rounded-xl border border-emerald-200/60 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">New Password</label>
+              <input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                className="w-full px-4 py-3 rounded-xl border border-emerald-200/60 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Confirm New Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter new password"
+                className="w-full px-4 py-3 rounded-xl border border-emerald-200/60 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              />
+            </div>
+          </div>
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={changingPassword}
+              className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/40"
+            >
+              {changingPassword ? 'Updating Password...' : 'Update Password'}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Data Export */}

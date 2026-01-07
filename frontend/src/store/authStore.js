@@ -136,6 +136,13 @@ const useAuthStore = create(
           // Silently fail and logout
           useAuthStore.getState().logout()
         }
+      },
+
+      // Update user profile in the store after profile edits
+      updateUserProfile: (updates) => {
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : state.user
+        }))
       }
     }),
     {

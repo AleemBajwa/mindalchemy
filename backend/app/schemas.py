@@ -26,6 +26,10 @@ class UserUpdate(BaseModel):
     timezone: Optional[str] = None
     language: Optional[str] = None
 
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
 class UserResponse(UserBase):
     id: int
     created_at: datetime
