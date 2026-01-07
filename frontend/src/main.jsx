@@ -9,7 +9,16 @@ import './index.css'
 // so users don't need to clear cache manually. This prevents
 // blank pages caused by stale cached assets.
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
+  // Use requestIdleCallback if available, otherwise setTimeout
+  const scheduleCleanup = (callback) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(callback, { timeout: 2000 })
+    } else {
+      setTimeout(callback, 1000)
+    }
+  }
+
+  scheduleCleanup(() => {
     try {
       const alreadyCleared = localStorage.getItem('sw_cleared_v1')
       if (alreadyCleared === '1') return
@@ -24,8 +33,14 @@ if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
 
           return Promise.all(registrations.map((reg) => reg.unregister())).finally(() => {
             localStorage.setItem('sw_cleared_v1', '1')
-            // Reload once so the page uses fresh assets, no manual action needed
-            window.location.reload()
+            // Only reload if we're not already on a working page
+            // This prevents blank pages on mobile
+            if (window.location.pathname === '/' || window.location.pathname === '') {
+              // Small delay to ensure React has rendered
+              setTimeout(() => {
+                window.location.reload()
+              }, 500)
+            }
           })
         })
         .catch((error) => {
