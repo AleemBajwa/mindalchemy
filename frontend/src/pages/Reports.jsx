@@ -3,8 +3,9 @@ import api from '../services/api'
 import { moodService } from '../services/moodService'
 import { journalService } from '../services/journalService'
 import { chatService } from '../services/chatService'
+import { insightsService } from '../services/insightsService'
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subWeeks, subMonths } from 'date-fns'
-import { FileText, Calendar, Download, TrendingUp, BarChart3, Loader2 } from 'lucide-react'
+import { FileText, Calendar, Download, TrendingUp, BarChart3, Loader2, Brain, Sparkles, AlertCircle, CheckCircle2, Lightbulb } from 'lucide-react'
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 export default function Reports() {
@@ -12,10 +13,25 @@ export default function Reports() {
   const [loading, setLoading] = useState(false)
   const [reportData, setReportData] = useState(null)
   const [dateRange, setDateRange] = useState(null)
+  const [insights, setInsights] = useState(null)
+  const [insightsLoading, setInsightsLoading] = useState(false)
 
   useEffect(() => {
     generateReport()
+    loadInsights()
   }, [reportType])
+
+  const loadInsights = async () => {
+    setInsightsLoading(true)
+    try {
+      const data = await insightsService.getPatterns()
+      setInsights(data)
+    } catch (error) {
+      console.error('Failed to load insights:', error)
+    } finally {
+      setInsightsLoading(false)
+    }
+  }
 
   const generateReport = async () => {
     setLoading(true)
@@ -289,6 +305,113 @@ export default function Reports() {
               </div>
             </div>
           </div>
+
+          {/* AI Insights */}
+          {insightsLoading ? (
+            <div className="bg-gradient-to-br from-white/90 via-indigo-50/50 to-purple-50/50 dark:from-gray-800/90 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-indigo-500/10 dark:shadow-gray-900/50 p-6 border border-indigo-200/30 dark:border-gray-700">
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-indigo-500 mr-3" />
+                <span className="text-gray-600 dark:text-gray-400">Analyzing your patterns...</span>
+              </div>
+            </div>
+          ) : insights && (
+            <div className="bg-gradient-to-br from-white/90 via-indigo-50/50 to-purple-50/50 dark:from-gray-800/90 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-indigo-500/10 dark:shadow-gray-900/50 p-6 border border-indigo-200/30 dark:border-gray-700">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">AI-Powered Insights</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Personalized analysis of your mental health journey</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Patterns */}
+                {insights.patterns && insights.patterns.length > 0 && (
+                  <div className="bg-white/60 dark:bg-gray-900/60 rounded-2xl p-4 border border-indigo-200/50 dark:border-gray-700">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Patterns Identified</h4>
+                    </div>
+                    <ul className="space-y-2">
+                      {insights.patterns.map((pattern, index) => (
+                        <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                          <span className="text-indigo-500 mt-1">•</span>
+                          <span>{pattern}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Positive Trends */}
+                {insights.positive_trends && insights.positive_trends.length > 0 && (
+                  <div className="bg-green-50/60 dark:bg-green-900/20 rounded-2xl p-4 border border-green-200/50 dark:border-green-800/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Positive Trends</h4>
+                    </div>
+                    <ul className="space-y-2">
+                      {insights.positive_trends.map((trend, index) => (
+                        <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                          <span className="text-green-500 mt-1">✓</span>
+                          <span>{trend}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Concerns */}
+                {insights.concerns && insights.concerns.length > 0 && (
+                  <div className="bg-amber-50/60 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-200/50 dark:border-amber-800/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Areas to Watch</h4>
+                    </div>
+                    <ul className="space-y-2">
+                      {insights.concerns.map((concern, index) => (
+                        <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                          <span className="text-amber-500 mt-1">⚠</span>
+                          <span>{concern}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Recommendations */}
+                {insights.recommendations && insights.recommendations.length > 0 && (
+                  <div className="bg-blue-50/60 dark:bg-blue-900/20 rounded-2xl p-4 border border-blue-200/50 dark:border-blue-800/50">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Lightbulb className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Recommendations</h4>
+                    </div>
+                    <ul className="space-y-2">
+                      {insights.recommendations.map((rec, index) => (
+                        <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                          <span className="text-blue-500 mt-1">💡</span>
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Overall Assessment */}
+                {insights.overall_assessment && (
+                  <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-2xl p-4 border-2 border-indigo-200/50 dark:border-indigo-800/50">
+                    <h4 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                      Overall Assessment
+                    </h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{insights.overall_assessment}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-12">

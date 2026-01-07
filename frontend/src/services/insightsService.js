@@ -6,5 +6,3 @@ export const insightsService = {
     return response.data
   }
 }
-
-

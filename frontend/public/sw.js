@@ -1,10 +1,12 @@
-// Service Worker for Push Notifications
-const CACHE_NAME = 'mindalchemy-v1'
+// Service Worker for Push Notifications and Offline Support
+const CACHE_NAME = 'mindalchemy-v2'
+const OFFLINE_URL = '/offline.html'
 const urlsToCache = [
   '/',
   '/index.html',
-  '/static/css/main.css',
-  '/static/js/main.js'
+  '/offline.html',
+  '/manifest.json',
+  '/icon.svg'
 ]
 
 // Install event - cache resources
@@ -41,16 +43,44 @@ self.addEventListener('activate', (event) => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', (event) => {
+  // Skip non-GET requests and API calls
+  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+    return
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request)
+        // Return cached version if available
+        if (response) {
+          return response
+        }
+        
+        // Try network, fallback to offline page for navigation requests
+        return fetch(event.request)
+          .then((response) => {
+            // Cache successful responses
+            if (response.status === 200) {
+              const responseToCache = response.clone()
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(event.request, responseToCache)
+              })
+            }
+            return response
+          })
+          .catch(() => {
+            // If offline and it's a navigation request, return offline page
+            if (event.request.mode === 'navigate') {
+              return caches.match(OFFLINE_URL)
+            }
+            // For other requests, return cached version or nothing
+            return caches.match(event.request)
+          })
       })
       .catch(() => {
-        // If both fail, return offline page
-        if (event.request.destination === 'document') {
-          return caches.match('/index.html')
+        // Final fallback
+        if (event.request.mode === 'navigate') {
+          return caches.match(OFFLINE_URL) || caches.match('/index.html')
         }
       })
   )
