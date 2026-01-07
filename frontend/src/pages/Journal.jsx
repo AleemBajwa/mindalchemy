@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { journalService } from '../services/journalService'
 import { format } from 'date-fns'
-import { BookOpen, Plus, Search, Sparkles, Calendar } from 'lucide-react'
+import { BookOpen, Plus, Search, Sparkles, Calendar, Heart } from 'lucide-react'
 
 export default function Journal() {
   const navigate = useNavigate()
@@ -77,13 +77,20 @@ export default function Journal() {
           </div>
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Journal</h2>
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <button
             onClick={() => setShowPrompts(!showPrompts)}
             className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-2.5 rounded-xl font-semibold hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-all flex items-center gap-2"
           >
             <Sparkles className="w-4 h-4" />
             {showPrompts ? 'Hide' : 'Show'} Prompts
+          </button>
+          <button
+            onClick={() => navigate('/journal/new', { state: { journalType: 'gratitude' } })}
+            className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white px-4 py-2.5 rounded-xl font-semibold hover:from-amber-600 hover:to-yellow-600 transition-all shadow-lg shadow-amber-500/25 hover:shadow-xl hover:shadow-amber-500/40 flex items-center gap-2"
+          >
+            <Heart className="w-4 h-4" />
+            Gratitude Entry
           </button>
           <button
             onClick={() => navigate('/journal/new')}

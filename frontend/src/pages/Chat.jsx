@@ -3,7 +3,7 @@ import { chatService } from '../services/chatService'
 import { crisisService } from '../services/crisisService'
 import { useAuthStore } from '../store/authStore'
 import { format } from 'date-fns'
-import { Bot, Send, AlertCircle, Phone, MessageSquare, AlertTriangle, History, Loader2 } from 'lucide-react'
+import { Bot, Send, AlertCircle, Phone, MessageSquare, AlertTriangle, History, Loader2, Mic, MicOff, Volume2, VolumeX } from 'lucide-react'
 import ChatHistory from '../components/ChatHistory'
 import { SkeletonMessage } from '../components/SkeletonLoader'
 
@@ -20,7 +20,12 @@ export default function Chat() {
   const [showTyping, setShowTyping] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [quickReplies, setQuickReplies] = useState([])
+  const [isListening, setIsListening] = useState(false)
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const [voiceEnabled, setVoiceEnabled] = useState(true)
   const messagesEndRef = useRef(null)
+  const recognitionRef = useRef(null)
+  const synthRef = useRef(null)
   const user = useAuthStore((state) => state.user)
 
   const handleSelectSession = async (session) => {
@@ -35,6 +40,40 @@ export default function Chat() {
       content: "Hello! I'm your MindAlchemy guide. I'm here to help transform your thoughts and support you. How are you feeling today?",
       timestamp: new Date().toISOString()
     }])
+    
+    // Initialize speech recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+      recognitionRef.current = new SpeechRecognition()
+      recognitionRef.current.continuous = false
+      recognitionRef.current.interimResults = false
+      recognitionRef.current.lang = 'en-US'
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript
+        setInputMessage(transcript)
+        setIsListening(false)
+        setTimeout(() => sendMessage(transcript), 100)
+      }
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error)
+        setIsListening(false)
+      }
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false)
+      }
+    } else {
+      setVoiceEnabled(false)
+    }
+    
+    // Initialize speech synthesis
+    if ('speechSynthesis' in window) {
+      synthRef.current = window.speechSynthesis
+    } else {
+      setVoiceEnabled(false)
+    }
     
     // Request location permission (for crisis situations)
     if (navigator.geolocation) {
@@ -51,6 +90,15 @@ export default function Chat() {
         },
         { enableHighAccuracy: false, timeout: 5000 }
       )
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+      if (synthRef.current) {
+        synthRef.current.cancel()
+      }
     }
   }, [])
 
@@ -128,6 +176,11 @@ export default function Chat() {
 
       setMessages(prev => [...prev, aiMessage])
       setQuickReplies(response.quick_replies || [])
+      
+      // Auto-speak AI response if voice is enabled
+      if (voiceEnabled && synthRef.current) {
+        speakText(response.response)
+      }
     } catch (error) {
       console.error('Failed to send message:', error)
       const errorMessage = {
@@ -152,6 +205,57 @@ export default function Chat() {
   const handleSendClick = (e) => {
     e.preventDefault()
     sendMessage()
+  }
+
+  const startListening = () => {
+    if (!recognitionRef.current || isListening) return
+    
+    try {
+      setIsListening(true)
+      recognitionRef.current.start()
+    } catch (error) {
+      console.error('Failed to start speech recognition:', error)
+      setIsListening(false)
+    }
+  }
+
+  const stopListening = () => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop()
+      setIsListening(false)
+    }
+  }
+
+  const speakText = (text) => {
+    if (!synthRef.current || !voiceEnabled) return
+    
+    // Cancel any ongoing speech
+    synthRef.current.cancel()
+    
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = 0.9
+    utterance.pitch = 1
+    utterance.volume = 0.8
+    
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+    
+    synthRef.current.speak(utterance)
+  }
+
+  const stopSpeaking = () => {
+    if (synthRef.current) {
+      synthRef.current.cancel()
+      setIsSpeaking(false)
+    }
+  }
+
+  const toggleVoice = () => {
+    if (isSpeaking) {
+      stopSpeaking()
+    }
+    setVoiceEnabled(!voiceEnabled)
   }
 
   return (
@@ -277,22 +381,66 @@ export default function Chat() {
       {/* Input */}
       <div className="bg-gradient-to-r from-white/90 via-indigo-50/70 to-purple-50/70 dark:from-gray-800/90 dark:via-gray-800/70 dark:to-gray-800/70 backdrop-blur-sm rounded-xl sm:rounded-2xl border-2 border-indigo-200/40 dark:border-gray-700 p-2.5 sm:p-3 md:p-4 shadow-xl shadow-indigo-500/10 dark:shadow-gray-900/50">
         <div className="flex gap-2 sm:gap-3">
+          {/* Voice Input Button */}
+          {voiceEnabled && (
+            <button
+              onClick={isListening ? stopListening : startListening}
+              type="button"
+              disabled={loading}
+              className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition-all flex items-center justify-center ${
+                isListening
+                  ? 'bg-red-500 text-white animate-pulse'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              } disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation`}
+              title={isListening ? 'Stop recording' : 'Start voice input'}
+              aria-label={isListening ? 'Stop recording' : 'Start voice input'}
+            >
+              {isListening ? (
+                <MicOff className="w-4 h-4 sm:w-5 sm:h-5" />
+              ) : (
+                <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+              )}
+            </button>
+          )}
+          
           <input
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
+            placeholder={isListening ? "Listening..." : "Type your message..."}
             className="flex-1 px-3 py-2 sm:px-4 sm:py-2.5 md:px-5 md:py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm sm:text-base"
-            disabled={loading}
+            disabled={loading || isListening}
             aria-label="Type your message"
             aria-describedby="chat-input-help"
           />
           <span id="chat-input-help" className="sr-only">Press Enter to send, Shift+Enter for new line</span>
+          
+          {/* Voice Output Toggle */}
+          {voiceEnabled && (
+            <button
+              onClick={toggleVoice}
+              type="button"
+              className={`px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition-all flex items-center justify-center ${
+                voiceEnabled
+                  ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-500'
+              } touch-manipulation`}
+              title={voiceEnabled ? 'Disable voice output' : 'Enable voice output'}
+              aria-label={voiceEnabled ? 'Disable voice output' : 'Enable voice output'}
+            >
+              {voiceEnabled ? (
+                <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              ) : (
+                <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />
+              )}
+            </button>
+          )}
+          
           <button
             onClick={handleSendClick}
             type="button"
-            disabled={loading || !inputMessage.trim()}
+            disabled={loading || !inputMessage.trim() || isListening}
             className="px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg sm:rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-500/25 hover:shadow-xl hover:shadow-indigo-500/40 flex items-center gap-1.5 sm:gap-2 touch-manipulation active:scale-95"
             aria-label="Send message"
           >
@@ -300,6 +448,18 @@ export default function Chat() {
             <span className="hidden sm:inline text-sm sm:text-base">Send</span>
           </button>
         </div>
+        {isListening && (
+          <div className="mt-2 text-xs text-red-600 dark:text-red-400 flex items-center gap-2">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            Listening... Speak now
+          </div>
+        )}
+        {isSpeaking && (
+          <div className="mt-2 text-xs text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+            <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+            Speaking response...
+          </div>
+        )}
       </div>
     </div>
   )

@@ -32,6 +32,10 @@ export default function JournalEntry() {
       if (state?.prompt) {
         setEntry(prev => ({ ...prev, content: `<p>${state.prompt}</p>` }))
       }
+      // Check if creating gratitude journal
+      if (state?.journalType === 'gratitude') {
+        setEntry(prev => ({ ...prev, journal_type: 'gratitude' }))
+      }
     }
   }, [id])
 
@@ -163,7 +167,23 @@ export default function JournalEntry() {
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-white/80 via-blue-50/50 to-cyan-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-blue-500/10 dark:shadow-gray-900/50 p-6 space-y-4 border border-blue-200/30 dark:border-gray-700">
+      <div className={`bg-gradient-to-br ${
+        entry.journal_type === 'gratitude' 
+          ? 'from-amber-50/80 via-yellow-50/50 to-orange-50/50 dark:from-amber-900/20 dark:via-yellow-900/20 dark:to-orange-900/20 border-amber-200/30 dark:border-amber-800/30'
+          : 'from-white/80 via-blue-50/50 to-cyan-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 border-blue-200/30 dark:border-gray-700'
+      } backdrop-blur-sm rounded-3xl shadow-xl shadow-blue-500/10 dark:shadow-gray-900/50 p-6 space-y-4 border`}>
+        {entry.journal_type === 'gratitude' && (
+          <div className="bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-900/30 dark:to-yellow-900/30 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+            <div className="flex items-center gap-2 mb-2">
+              <Heart className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <h3 className="font-semibold text-amber-900 dark:text-amber-200">Gratitude Journal</h3>
+            </div>
+            <p className="text-sm text-amber-800 dark:text-amber-300">
+              Take a moment to reflect on what you're grateful for. This practice can boost your mood and help you focus on the positive aspects of your life.
+            </p>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -174,7 +194,7 @@ export default function JournalEntry() {
               value={entry.title}
               onChange={(e) => setEntry({ ...entry, title: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-              placeholder="Give your entry a title..."
+              placeholder={entry.journal_type === 'gratitude' ? "What are you grateful for today?" : "Give your entry a title..."}
             />
           </div>
           <div>
@@ -197,12 +217,25 @@ export default function JournalEntry() {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Content <span className="text-red-500">*</span>
           </label>
+          {entry.journal_type === 'gratitude' && !entry.content && (
+            <div className="mb-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+              <p className="text-sm text-amber-800 dark:text-amber-300 mb-2 font-medium">Gratitude Prompts:</p>
+              <ul className="text-sm text-amber-700 dark:text-amber-400 space-y-1 list-disc list-inside">
+                <li>What are three things I'm grateful for today?</li>
+                <li>Who am I grateful to have in my life?</li>
+                <li>What experience made me smile today?</li>
+                <li>What am I grateful to have learned recently?</li>
+              </ul>
+            </div>
+          )}
           <div className="border border-gray-300 rounded-lg overflow-hidden">
             <ReactQuill
               theme="snow"
               value={entry.content}
               onChange={(content) => setEntry({ ...entry, content })}
-              placeholder="Write your thoughts, feelings, and experiences here..."
+              placeholder={entry.journal_type === 'gratitude' 
+                ? "What are you grateful for today? Write about the people, experiences, or things that bring you joy and appreciation..."
+                : "Write your thoughts, feelings, and experiences here..."}
               modules={{
                 toolbar: [
                   [{ 'header': [1, 2, 3, false] }],
