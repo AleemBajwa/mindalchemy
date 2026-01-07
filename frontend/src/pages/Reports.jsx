@@ -18,7 +18,10 @@ export default function Reports() {
 
   useEffect(() => {
     generateReport()
-    loadInsights()
+    // Load insights separately, don't block if it fails
+    loadInsights().catch(err => {
+      console.error('Insights loading error:', err)
+    })
   }, [reportType])
 
   const loadInsights = async () => {
@@ -28,6 +31,14 @@ export default function Reports() {
       setInsights(data)
     } catch (error) {
       console.error('Failed to load insights:', error)
+      // Set empty insights on error to prevent blank page
+      setInsights({
+        patterns: [],
+        positive_trends: [],
+        concerns: [],
+        recommendations: [],
+        overall_assessment: 'Unable to load AI insights at this time. Please try again later.'
+      })
     } finally {
       setInsightsLoading(false)
     }
@@ -314,7 +325,7 @@ export default function Reports() {
                 <span className="text-gray-600 dark:text-gray-400">Analyzing your patterns...</span>
               </div>
             </div>
-          ) : insights && (
+          ) : insights ? (
             <div className="bg-gradient-to-br from-white/90 via-indigo-50/50 to-purple-50/50 dark:from-gray-800/90 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-indigo-500/10 dark:shadow-gray-900/50 p-6 border border-indigo-200/30 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
