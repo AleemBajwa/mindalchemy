@@ -35,41 +35,12 @@ import Layout from './components/Layout'
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, token } = useAuthStore()
-  const [isChecking, setIsChecking] = useState(true)
   const location = useLocation()
 
-  useEffect(() => {
-    // Wait for Zustand persist to hydrate from localStorage
-    // This ensures we don't redirect before checking if user is actually logged in
-    const checkAuth = async () => {
-      // Small delay to let Zustand persist middleware hydrate
-      await new Promise(resolve => setTimeout(resolve, 50))
-      
-      // If there's a token in localStorage, wait a bit more for checkAuth to complete
-      if (token) {
-        await new Promise(resolve => setTimeout(resolve, 200))
-      }
-      
-      setIsChecking(false)
-    }
-    
-    checkAuth()
-  }, [token])
-
-  // Show loading state while checking auth (prevents blank page)
-  if (isChecking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50/50 via-rose-50/30 via-purple-50/30 to-indigo-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-          <div className="text-gray-500 font-medium">Loading...</div>
-        </div>
-      </div>
-    )
-  }
-
-  // After checking, redirect if not authenticated
-  if (!isAuthenticated) {
+  // If there is no token and not authenticated, send to login.
+  // If a token exists (e.g. after refresh), allow access and let
+  // API 401s handle logout. This prevents refresh → forced logout.
+  if (!token && !isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
