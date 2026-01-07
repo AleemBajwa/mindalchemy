@@ -422,7 +422,7 @@ export default function Reports() {
                 )}
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       ) : (
         <div className="text-center py-12">
