@@ -161,7 +161,7 @@ export default function Settings() {
       )}
 
       {/* Account Information & Profile Edit */}
-      <div className="bg-gradient-to-br from-white/80 via-indigo-50/50 to-purple-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-indigo-500/10 dark:shadow-gray-900/50 p-6 border border-indigo-200/30 dark:border-gray-700">
+      <div className="bg-gradient-to-br from-white/80 via-indigo-50/50 to-purple-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-indigo-500/10 dark:shadow-gray-900/50 p-4 sm:p-6 border border-indigo-200/30 dark:border-gray-700">
         <div className="flex items-center gap-3 mb-4">
           <User className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
           <div>
@@ -209,7 +209,7 @@ export default function Settings() {
       </div>
 
       {/* Password Change */}
-      <div className="bg-gradient-to-br from-white/80 via-emerald-50/50 to-teal-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-emerald-500/10 dark:shadow-gray-900/50 p-6 border border-emerald-200/30 dark:border-gray-700">
+      <div className="bg-gradient-to-br from-white/80 via-emerald-50/50 to-teal-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-emerald-500/10 dark:shadow-gray-900/50 p-4 sm:p-6 border border-emerald-200/30 dark:border-gray-700">
         <div className="flex items-center gap-3 mb-4">
           <Shield className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
           <div>

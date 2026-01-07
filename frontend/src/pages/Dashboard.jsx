@@ -78,8 +78,8 @@ export default function Dashboard() {
       </div>
 
       {/* Quick Mood Selector */}
-      <div className="bg-gradient-to-br from-white/80 via-rose-50/50 to-amber-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-rose-500/10 dark:shadow-gray-900/50 p-6 border border-rose-200/30 dark:border-gray-700">
-        <div className="flex justify-around gap-3">
+      <div className="bg-gradient-to-br from-white/80 via-rose-50/50 to-amber-50/50 dark:from-gray-800/80 dark:via-gray-800/50 dark:to-gray-800/50 backdrop-blur-sm rounded-3xl shadow-xl shadow-rose-500/10 dark:shadow-gray-900/50 p-4 sm:p-6 border border-rose-200/30 dark:border-gray-700">
+        <div className="flex justify-between sm:justify-around gap-2 sm:gap-3 overflow-x-auto pb-1">
           {moods.map((mood) => {
             const Icon = mood.icon
             return (
@@ -99,7 +99,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="group bg-gradient-to-br from-white/70 via-blue-50/70 to-indigo-50/70 dark:from-gray-800/70 dark:via-blue-900/20 dark:to-indigo-900/20 backdrop-blur-sm rounded-2xl p-6 text-center border border-blue-200/40 dark:border-blue-800/50 hover:shadow-xl hover:shadow-blue-500/20 hover:scale-105 transition-all duration-300">
           <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
             <MessageCircle className="w-6 h-6 text-white" strokeWidth={2.5} />

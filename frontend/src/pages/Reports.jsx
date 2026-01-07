@@ -174,7 +174,7 @@ export default function Reports() {
 
   return (
     <div className="space-y-6 pb-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
             <FileText className="w-6 h-6 text-white" strokeWidth={2.5} />
@@ -184,7 +184,7 @@ export default function Reports() {
             <p className="text-gray-600 dark:text-gray-400 mt-1">View your weekly and monthly progress</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap sm:flex-nowrap">
           <button
             onClick={() => setReportType('weekly')}
             className={`px-4 py-2 rounded-xl font-semibold transition-all ${

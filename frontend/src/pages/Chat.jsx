@@ -155,7 +155,7 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] sm:h-[calc(100vh-8rem)] min-h-[500px]">
+    <div className="flex flex-col h-[calc(100vh-8rem)] sm:h-[calc(100vh-8rem)] min-h-[500px] overflow-hidden">
       {/* Simple Crisis Notification Banner - Non-intrusive */}
       {isCrisis && emergencyNumber && (
         <div className="fixed top-2 sm:top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-[calc(100%-1rem)] sm:w-full mx-2 sm:mx-4 animate-slide-down">
