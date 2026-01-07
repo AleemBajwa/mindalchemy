@@ -133,8 +133,8 @@ const useAuthStore = create(
             isAuthenticated: true
           })
         } catch (error) {
-          // Silently fail and logout
-          useAuthStore.getState().logout()
+          // Don't aggressively log the user out on transient /auth/me errors.
+          // Keep existing token so page refreshes don't constantly force re-login.
         }
       },
 

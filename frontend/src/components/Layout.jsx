@@ -164,7 +164,7 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-rose-50/30 via-purple-50/30 to-indigo-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50/50 via-rose-50/30 via-purple-50/30 to-indigo-50/50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 pb-20 overflow-x-hidden">
       {/* Header */}
       <header className="bg-gradient-to-r from-amber-50/90 via-rose-50/90 to-purple-50/90 dark:from-gray-800/90 dark:via-gray-800/90 dark:to-gray-800/90 backdrop-blur-xl border-b border-amber-200/30 dark:border-gray-700/50 shadow-lg shadow-amber-500/5 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

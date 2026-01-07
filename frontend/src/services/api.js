@@ -48,9 +48,16 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      // Clear auth on 401
+      const requestUrl = error.config?.url || ''
+
+      // Don't force logout on the lightweight /auth/me check used during refresh.
+      // This prevents an annoying "kick back to login" on every page reload.
+      if (requestUrl.endsWith('/auth/me')) {
+        return Promise.reject(error)
+      }
+
+      // For other 401s, clear auth and send user to login (token really invalid).
       localStorage.removeItem('auth-storage')
-      // Only redirect if not already on login page
       if (window.location.pathname !== '/login') {
         window.location.href = '/login'
       }
