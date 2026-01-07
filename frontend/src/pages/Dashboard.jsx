@@ -8,7 +8,7 @@ import {
   MessageCircle, TrendingUp, BookOpen, Brain, Heart, 
   Sparkles, Target, Moon, Book, AlertCircle, 
   Activity, Calendar, ArrowRight, Smile, Frown, 
-  Meh, Laugh, AlertTriangle
+  Meh, Laugh, AlertTriangle, FileText
 } from 'lucide-react'
 
 export default function Dashboard() {
@@ -232,6 +232,20 @@ export default function Dashboard() {
               <div className="font-bold text-gray-900 dark:text-white mb-1">Crisis Help</div>
               <div className="text-xs text-gray-600 dark:text-gray-400">Emergency resources</div>
               <ArrowRight className="w-4 h-4 text-red-600 dark:text-red-400 mx-auto mt-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+            </div>
+          </button>
+          <button
+            onClick={() => navigate('/reports')}
+            className="group relative bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 text-center border border-indigo-100 dark:border-indigo-800/50 hover:shadow-xl hover:scale-105 transition-all duration-300 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="relative z-10">
+              <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 group-hover:shadow-xl group-hover:shadow-indigo-500/40 transition-all">
+                <FileText className="w-7 h-7 text-white" strokeWidth={2.5} />
+              </div>
+              <div className="font-bold text-gray-900 dark:text-white mb-1">AI Insights</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">View your patterns</div>
+              <ArrowRight className="w-4 h-4 text-indigo-600 dark:text-indigo-400 mx-auto mt-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
             </div>
           </button>
           <button

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { useTheme } from '../contexts/ThemeContext'
-import { Home, MessageCircle, Smile, BookOpen, Target, Sun, Moon, LogOut, User, Bell, Settings } from 'lucide-react'
+import { Home, MessageCircle, Smile, BookOpen, Target, Sun, Moon, LogOut, User, Bell, Settings, FileText } from 'lucide-react'
 import { notificationService } from '../services/notificationService'
 
 export default function Layout() {
@@ -153,7 +153,7 @@ export default function Layout() {
     { path: '/chat', icon: MessageCircle, label: 'Chat' },
     { path: '/mood', icon: Smile, label: 'Mood' },
     { path: '/journal', icon: BookOpen, label: 'Journal' },
-    { path: '/goals', icon: Target, label: 'Goals' },
+    { path: '/reports', icon: FileText, label: 'Reports' },
   ]
 
   const isActive = (path) => {
